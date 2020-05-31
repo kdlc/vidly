@@ -4,11 +4,11 @@ import Movie from "./movie";
 
 class Movies extends Component {
   state = {
-    movies: getMovies(),
+    movies: getMovies()
+    //movies: []
   };
 
-  handleDelete = (movie_id) => {
-    alert("Delete: " + movie_id);
+  handleDelete = (movie_id) => {    
     // const _movies = this.state.movies.filter((m) => m.id !== movie.id);
     // this.setState({ movies: _movies });    
     const _movies = this.state.movies.filter((m) => m._id !== movie_id);
@@ -16,10 +16,16 @@ class Movies extends Component {
   };
 
   render() {
+    const { length: count } = this.state.movies;
+
+    // if (this.state.movies.length === 0)
+    if(count === 0)
+      return <p>There are no movies in the database.</p>;
+    
     return (
       <div className="container">
         <br />
-        <h5>Showing {this.state.movies.length} movies in the database</h5>
+        <h5>Showing {count} movies in the database</h5>
         <br />
         <table className="table">
           <thead>
