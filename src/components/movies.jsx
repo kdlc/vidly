@@ -1,12 +1,30 @@
 import React, { Component } from "react";
 import { getMovies } from "../services/fakeMovieService";
 import Movie from "./movie";
+import Pagination from './common/pagination'
+import shortid from 'shortid'
 
 class Movies extends Component {
   state = {
-    movies: getMovies()
+    movies: getMovies(),
+    pageSize: 4
     //movies: []
   };
+
+  handlePageChange = page => {
+    console.log({ page });
+  }
+  
+  handleLike = movie => {
+    //here we are going to call our backend to persist the data
+    //at the moment we are just updating the UI
+    console.log("handle like!");
+    const movies = [...this.state.movies];
+    const index = movies.indexOf(movie);
+    movies[index] = { ...movies[index] };
+    movies[index].liked = !movies[index].liked;
+    this.setState({ movies: movies });
+  }
 
   handleDelete = (movie_id) => {    
     // const _movies = this.state.movies.filter((m) => m.id !== movie.id);
@@ -35,14 +53,17 @@ class Movies extends Component {
               <th scope="col">Stock</th>
               <th scope="col">Rate</th>
               <th scope="col"></th>
+              <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
             {this.state.movies.map((m) => (
-              <Movie movie={m} onDelete={this.handleDelete} />
+              <Movie key={shortid.generate()} movie={m} onDelete={this.handleDelete} onLike={this.handleLike} />
             ))}
           </tbody>
         </table>
+        {/* which inputs and events we need to give to the component */}
+        <Pagination itemsCount={count} pageSize={this.state.pageSize} onPageChange={this.handlePageChange}/>
       </div>
     );
   }

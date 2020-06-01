@@ -1,8 +1,13 @@
 import React, { Component, Fragment } from "react";
+//import LikeButton from './LikeButton'
+import Like from './common/like';
+
+
 //import PropTypes from "prop-types";
 class Movie extends Component {
+
   render() {
-    const { movie, onDelete } = this.props;
+    const { movie, onDelete, onLike} = this.props;
     console.log(movie);
     return (
       <Fragment>
@@ -11,6 +16,10 @@ class Movie extends Component {
           <td>{movie.genre.name}</td>
           <td>{movie.numberInStock}</td>
           <td>{movie.dailyRentalRate}</td>
+          <td>            
+            {/* <LikeButton movieID={movie._id}/>             */}
+            <Like liked={movie.liked} onClick={() => onLike(movie)}/>
+          </td>
           <td>
             <button
               onClick={() => onDelete(movie._id)}
