@@ -1,17 +1,21 @@
 import React, { Component } from "react";
 import { getMovies } from "../services/fakeMovieService";
+import { getGenres } from "../services/fakeGenreService";
+
 import Movie from "./movie";
 import Pagination from './common/pagination';
 import { paginate } from '../utils/paginate';
+
+import ListGroup from './common/listGroup';
 
 import shortid from 'shortid'
 
 class Movies extends Component {
   state = {
-    movies: getMovies(),
+    movies: [],
     currentPage: 1,
-    pageSize: 3
-    //movies: []
+    pageSize: 3,
+    genres: []        
   };
 
   handlePageChange = page => {
@@ -37,45 +41,76 @@ class Movies extends Component {
     this.setState({ movies: _movies });
   };
 
+  componentDidMount() {
+    this.setState({ movies: getMovies(), genres: getGenres() });
+    console.log("Movies", this.state.movies);
+    console.log("Genres", this.state.genres);
+  }
+
+  handleGenreSelect = genre => {
+    console.log("genre selected!");
+    console.log("genre", genre);
+    this.setState({ selectedGenre: genre });
+  }
+
   render() {
     const { length: count } = this.state.movies;
-    const { pageSize, currentPage, movies: allMovies } = this.state;
+    const { pageSize, currentPage, selectedGenre, movies: allMovies } = this.state;
 
     // if (this.state.movies.length === 0)
     if(count === 0)
       return <p>There are no movies in the database.</p>;
     
-    const movies = paginate(allMovies, currentPage, pageSize);
+    const filtered = selectedGenre
+      ? allMovies.filter(m => m.genre._id === selectedGenre._id)
+      : allMovies;
+    const movies = paginate(filtered, currentPage, pageSize);
 
     return (
-      <div className="container">
-        <br />
-        <h5>Showing {count} movies in the database</h5>
-        <br />
-        <table className="table">
-          <thead>
-            <tr>
-              <th scope="col">Title</th>
-              <th scope="col">Genre</th>
-              <th scope="col">Stock</th>
-              <th scope="col">Rate</th>
-              <th scope="col"></th>
-              <th scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {movies.map((m) => (
-              <Movie key={shortid.generate()} movie={m} onDelete={this.handleDelete} onLike={this.handleLike} />
-            ))}
-          </tbody>
-        </table>
-        {/* which inputs and events we need to give to the component */}
-        <Pagination
-          itemsCount={count}
-          pageSize={pageSize}
-          currentPage={currentPage}
-          onPageChange={this.handlePageChange}
-        />
+      <div className="row">
+        <div className="col-3">
+          <ListGroup
+            items={this.state.genres}
+            selectedItem={this.state.selectedGenre}
+            textProperty="name"
+            valueProperty="_id"
+            onItemSelect={this.handleGenreSelect} />
+        </div>
+
+        <div className="col">
+          <br />
+          <h5>Showing {filtered.length} movies in the database</h5>
+          <br />
+          <table className="table">
+            <thead>
+              <tr>
+                <th scope="col">Title</th>
+                <th scope="col">Genre</th>
+                <th scope="col">Stock</th>
+                <th scope="col">Rate</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {movies.map((m) => (
+                <Movie
+                  key={shortid.generate()}
+                  movie={m}
+                  onDelete={this.handleDelete}
+                  onLike={this.handleLike}
+                />
+              ))}
+            </tbody>
+          </table>
+          {/* which inputs and events we need to give to the component */}
+          <Pagination
+            itemsCount={filtered.length}
+            pageSize={pageSize}
+            currentPage={currentPage}
+            onPageChange={this.handlePageChange}
+          />
+        </div>
       </div>
     );
   }
