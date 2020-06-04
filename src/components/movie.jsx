@@ -8,7 +8,7 @@ class Movie extends Component {
 
   render() {
     const { movie, onDelete, onLike} = this.props;
-    console.log(movie);
+    //console.log(movie);
     return (
       <Fragment>
         <tr key={movie._id}>

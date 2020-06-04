@@ -1,18 +1,22 @@
 import React, { Component } from "react";
 import { getMovies } from "../services/fakeMovieService";
 import Movie from "./movie";
-import Pagination from './common/pagination'
+import Pagination from './common/pagination';
+import { paginate } from '../utils/paginate';
+
 import shortid from 'shortid'
 
 class Movies extends Component {
   state = {
     movies: getMovies(),
-    pageSize: 4
+    currentPage: 1,
+    pageSize: 3
     //movies: []
   };
 
   handlePageChange = page => {
     console.log({ page });
+    this.setState({ currentPage: page });
   }
   
   handleLike = movie => {
@@ -35,11 +39,14 @@ class Movies extends Component {
 
   render() {
     const { length: count } = this.state.movies;
+    const { pageSize, currentPage, movies: allMovies } = this.state;
 
     // if (this.state.movies.length === 0)
     if(count === 0)
       return <p>There are no movies in the database.</p>;
     
+    const movies = paginate(allMovies, currentPage, pageSize);
+
     return (
       <div className="container">
         <br />
@@ -57,13 +64,18 @@ class Movies extends Component {
             </tr>
           </thead>
           <tbody>
-            {this.state.movies.map((m) => (
+            {movies.map((m) => (
               <Movie key={shortid.generate()} movie={m} onDelete={this.handleDelete} onLike={this.handleLike} />
             ))}
           </tbody>
         </table>
         {/* which inputs and events we need to give to the component */}
-        <Pagination itemsCount={count} pageSize={this.state.pageSize} onPageChange={this.handlePageChange}/>
+        <Pagination
+          itemsCount={count}
+          pageSize={pageSize}
+          currentPage={currentPage}
+          onPageChange={this.handlePageChange}
+        />
       </div>
     );
   }
