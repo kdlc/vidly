@@ -1,11 +1,11 @@
 import React from 'react';
-
+import shortid from 'shortid';
 const ListGroup = (props) => {
     const { items, textProperty, valueProperty, selectedItem, onItemSelect } = props;
-    return <ul className="list-group">
+    return <ul className="list-group" key={shortid.generate()}>
         {items.map(item => (
-            <li onClick={() => onItemSelect(item)}
-                key={item[valueProperty]}
+            <li key={item[valueProperty]}
+                onClick={() => onItemSelect(item)}                
                 className={item === selectedItem ? "list-group-item active" : "list-group-item"}>                
                 {item[textProperty]}
             </li>))}

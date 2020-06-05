@@ -10,7 +10,8 @@ class LikeButton extends Component {
         return class_name;
     }
 
-    handleLike(movie_id) {        
+    handleLike(movie_id) {    
+        debugger
         console.log("Here we go: " + movie_id);
         let newLikeValue = this.state.like ? false : true;
         this.setState({ like: newLikeValue });

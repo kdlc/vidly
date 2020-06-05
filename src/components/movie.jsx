@@ -35,6 +35,17 @@ class Movie extends Component {
   }
 }
 
+
+//usage
+// {movies.map((m) => (
+//   <Movie
+//     key={shortid.generate()}
+//     movie={m}
+//     onDelete={this.handleDelete}
+//     onLike={this.handleLike}
+//   />
+// ))}
+
 //PropTypes
 // Movie.propTypes = {
 //   title: PropTypes.string,
