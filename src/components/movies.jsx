@@ -55,34 +55,43 @@ class Movies extends Component {
   }
 
   handleGenreSelect = genre => {
-    console.log("genre selected!");
-    console.log("genre", genre);
+    console.log("genre selected!");    
     this.setState({ selectedGenre: genre, currentPage: 1 });
   }
+
+  getPagedData = () => {
+    const {
+      pageSize,
+      currentPage, 
+      sortColumn,
+      selectedGenre,
+      movies: allMovies
+    } = this.state;
+     //1. filter, 2.sort, 3. paginate
+     const filtered = this.state.selectedGenre && selectedGenre._id
+     ? allMovies.filter(m => m.genre._id === selectedGenre._id)
+     : allMovies;
+       
+     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order])
+       
+     const movies = paginate(sorted, currentPage, pageSize);
+
+     return  {totalCount: filtered.length, data: movies };
+
+  };
 
   render() {
     const { length: count } = this.state.movies;
     const { pageSize,
             currentPage,
-            selectedGenre,
-            movies: allMovies,
-            sortColumn
+            sortColumn            
           } = this.state;
 
     // if (this.state.movies.length === 0)
     if(count === 0)
       return <p>There are no movies in the database.</p>;
     
-    //1. filter, 2.sort, 3. paginate
-    const filtered = selectedGenre && selectedGenre._id
-      ? allMovies.filter(m => m.genre._id === selectedGenre._id)
-      : allMovies;
-    
-    console.log("path: " + sortColumn.path + " order: " + sortColumn.order);
-    const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order])
-    console.log(sorted);
-    
-    const movies = paginate(sorted, currentPage, pageSize);
+    const {totalCount, data: movies }  = this.getPagedData();
 
     return (
       <div className="row">
@@ -100,7 +109,7 @@ class Movies extends Component {
           <MoviesTable movies={movies} sortColumn={sortColumn} onLike={this.handleLike} onDelete={this.handleDelete} onSort={this.handleSort} />
                       
           <Pagination
-            itemsCount={filtered.length}
+            itemsCount={totalCount}
             pageSize={pageSize}
             currentPage={currentPage}
             onPageChange={this.handlePageChange}
